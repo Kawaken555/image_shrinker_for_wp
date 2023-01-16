@@ -1,0 +1,1 @@
+RESIZED_FOLDER_PATH ='/resized'

@@ -1,0 +1,7 @@
+{
+  "python.defaultInterpreterPath": "../venv/bin",
+  "code-runner.executorMap": {
+    "python": "$pythonPath -u $fullFileName"
+    },
+  "python.formatting.provider": "black"
+}
