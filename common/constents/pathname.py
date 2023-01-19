@@ -1,1 +1,2 @@
 RESIZED_FOLDER_PATH ='/resized'
+CACHE_FILE_PATH = RESIZED_FOLDER_PATH + '/cache.txt'

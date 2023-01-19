@@ -1,20 +1,22 @@
 
 import os
 import pathlib
+from tkinter import messagebox
 from common.constents.filesize import WP_MAX_WIDTH
-from common.constents.pathname import RESIZED_FOLDER_PATH
+from common.constents.pathname import CACHE_FILE_PATH, RESIZED_FOLDER_PATH
 from common.constents.patterns import IMAGE_FILE_EXTENSION_PATTERN
 from explores.Directory import Directory
 from explores.files.image_file import ImageFile
+from explores.files.text_file import TextFile
 
 def get_current_dir_path():
     return pathlib.Path(os.getcwd())
 def get_resized_image_dir_path():
     return pathlib.Path(os.getcwd()+ RESIZED_FOLDER_PATH)
-def get_current_dir_image_content_paths(current_dir):
-    return current_dir.get_inner_file_passes(IMAGE_FILE_EXTENSION_PATTERN)
+def get_current_dir_image_content_paths(current_dir,exclude_path):
+    return current_dir.get_inner_file_passes(IMAGE_FILE_EXTENSION_PATTERN, exclude_path)
 
-def convert_paths_to_images(image_file_paths):
+def convert_paths_to_imagefiles(image_file_paths):
     image_list = []
     for image_file_path in image_file_paths:
         image_list.append(ImageFile(image_file_path))
@@ -44,14 +46,44 @@ def save_image_list(image_list):
     for image in image_list:
         image.save()
 
+def get_cache_path():
+    return pathlib.Path(str(get_current_dir_path()) + CACHE_FILE_PATH)
+
+def get_cache():
+    cache_path = get_cache_path()
+    cache_text_list = TextFile(cache_path).get_contents_textlist()
+    return cache_text_list
+
+def remove_cached_paths(target_content_paths,cache_text_list):
+    if len(cache_text_list) == 0:
+        return target_content_paths
+
+    removed_cache_path_list = []
+    for target_content_path in target_content_paths:
+        str_path = str(target_content_path)
+        if not str_path in cache_text_list:
+            removed_cache_path_list.append(target_content_path)
+    return removed_cache_path_list
+
+def add_processing_image_path_to_cache(image_file_path_list):
+    image_file_str_path_list = []
+    for image_file_path in image_file_path_list:
+        image_file_str_path_list.append(str(image_file_path))
+    TextFile(get_cache_path()).add_texts_from_list(image_file_str_path_list)
+    
 current_dir : Directory = Directory(get_current_dir_path())
 resized_image_dir : Directory = Directory(get_resized_image_dir_path())
-current_dir_image_content_paths = get_current_dir_image_content_paths(current_dir)
+current_dir_image_content_paths = \
+    get_current_dir_image_content_paths(current_dir, [get_resized_image_dir_path()])
 
-target_image_list = convert_paths_to_images(current_dir_image_content_paths)
+cache = get_cache()
+cache_cutted_content_paths = remove_cached_paths(current_dir_image_content_paths,cache)
+add_processing_image_path_to_cache(cache_cutted_content_paths)
 
-path_converted_image_list = convert_current_path_to_save_target_path(current_dir,target_image_list)
+target_image_file_list = convert_paths_to_imagefiles(cache_cutted_content_paths)
+
+path_converted_image_list = convert_current_path_to_save_target_path(current_dir,target_image_file_list)
 shrinked_image_list = shrink_target_Image_list(path_converted_image_list)
 save_image_list(shrinked_image_list)
 
-print( str(len(shrinked_image_list)) + '件の画像を縮小しました')
+messagebox.showinfo('タスクが完了しました', str(len(shrinked_image_list)) + '件の画像を縮小しました')
