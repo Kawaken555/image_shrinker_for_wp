@@ -1,18 +1,20 @@
 
 import os
 import pathlib
+import sys
 from tkinter import messagebox
 from common.constents.filesize import WP_MAX_WIDTH
 from common.constents.pathname import CACHE_FILE_PATH, RESIZED_FOLDER_PATH
 from common.constents.patterns import IMAGE_FILE_EXTENSION_PATTERN
-from explores.Directory import Directory
+from explores.directory import Directory
 from explores.files.image_file import ImageFile
 from explores.files.text_file import TextFile
 
 def get_current_dir_path():
-    return pathlib.Path(os.getcwd())
+    return pathlib.Path(os.path.realpath(os.path.dirname(sys.argv[0])))
 def get_resized_image_dir_path():
-    return pathlib.Path(os.getcwd()+ RESIZED_FOLDER_PATH)
+    current_dir_path = str(get_current_dir_path())
+    return pathlib.Path(current_dir_path + RESIZED_FOLDER_PATH)
 def get_current_dir_image_content_paths(current_dir,exclude_path):
     return current_dir.get_inner_file_passes(IMAGE_FILE_EXTENSION_PATTERN, exclude_path)
 
