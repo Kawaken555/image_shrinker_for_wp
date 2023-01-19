@@ -6,7 +6,7 @@ from tkinter import messagebox
 from common.constents.filesize import WP_MAX_WIDTH
 from common.constents.pathname import CACHE_FILE_PATH, RESIZED_FOLDER_PATH
 from common.constents.patterns import IMAGE_FILE_EXTENSION_PATTERN
-from explores.directory import Directory
+from explores.Directory import Directory
 from explores.files.image_file import ImageFile
 from explores.files.text_file import TextFile
 
